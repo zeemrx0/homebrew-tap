@@ -1,6 +1,6 @@
 cask "agent-switch" do
-  version "0.1.3"
-  sha256 "3bb33823a51c27a1020a6d7c2e38a8fc2df7e2fd8ab9c6a9af9dad63e52e86aa"
+  version "0.1.4"
+  sha256 "3c8fa95ff0acb5e2a4b16dadd13cc95f15df70a0cff538e255f8af5368bd5843"
 
   url "https://github.com/ZeeMRx0/agent-switch/archive/refs/tags/v#{version}.tar.gz"
   name "Agent Switch"
@@ -34,17 +34,6 @@ cask "agent-switch" do
   binary "#{app_path}/Contents/MacOS/agent-switch"
 
   preflight_steps do
-    # A signed script install keeps its logins in another vault. Stop before changing anything.
-    if_path_exists ".local/bin/agent-switch-keychain", base: :home do
-      run "/bin/sh",
-          args: [
-            "-c",
-            'echo "A signed script install exists. It uses a different vault. ' \
-            "Remove ~/.local/bin/agent-switch and ~/.local/bin/agent-switch-keychain " \
-            'after saving your accounts, then run the command again." >&2; exit 1',
-          ]
-    end
-
     # The old Homebrew formula links the same command name. Stop before changing anything.
     run "/bin/sh",
         args: [
