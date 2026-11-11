@@ -1,21 +1,22 @@
 cask "agent-switch" do
-  version "0.1.4"
-  sha256 "3c8fa95ff0acb5e2a4b16dadd13cc95f15df70a0cff538e255f8af5368bd5843"
+  version "0.1.5"
+  sha256 "a988e68d3191c594a5561be97435a2e54fe5a517e9e26a7300245ee10c082358"
 
-  url "https://github.com/ZeeMRx0/agent-switch/archive/refs/tags/v#{version}.tar.gz"
+  url "https://github.com/ZeeMRx0/agent-switch/releases/download/v#{version}/Agent-Switch-#{version}-arm64.zip"
   name "Agent Switch"
   desc "Switch Claude, ChatGPT and Antigravity accounts per surface"
   homepage "https://github.com/ZeeMRx0/agent-switch"
 
-  depends_on formula: "rust"
+  depends_on arch: :arm64
   depends_on macos: :ventura
 
   app_path = "#{Dir.home}/Applications/Agent Switch.app"
 
-  app "build/bundle/Agent Switch.app", target: "~/Applications/Agent Switch.app"
+  app "Agent Switch.app", target: "~/Applications/Agent Switch.app"
   # Install steps run in a sandbox that cannot reach Launch Services, so `open` cannot run there.
   # An installer script runs outside the sandbox, but before the app is moved into place.
-  # It starts a detached helper that waits for the finished app, then opens it (it gives up after 60 seconds).
+  # It starts a detached helper that waits for the finished app, removes the download quarantine flag (the app is
+  # ad-hoc signed, so this skips the Gatekeeper prompt), then opens it (it gives up after 60 seconds).
   installer script: {
     executable:   "/bin/sh",
     args:         [
@@ -24,7 +25,8 @@ cask "agent-switch" do
       'while { [ ! -f "$app/Contents/_CodeSignature/CodeResources" ] || ' \
       '[ ! -f "$app/Contents/MacOS/agent-switch-menubar" ]; } && [ "$n" -lt 60 ]; ' \
       "do sleep 1; n=$((n + 1)); done; " \
-      '[ -f "$app/Contents/MacOS/agent-switch-menubar" ] && sleep 1 && /usr/bin/open "$app" ) ' \
+      '[ -f "$app/Contents/MacOS/agent-switch-menubar" ] && sleep 1 && ' \
+      '/usr/bin/xattr -dr com.apple.quarantine "$app"; /usr/bin/open "$app" ) ' \
       ">/dev/null 2>&1 </dev/null &",
       "open-agent-switch",
       app_path,
@@ -55,29 +57,9 @@ cask "agent-switch" do
           'then run the command again." >&2; exit 1; fi',
         ]
 
-    # Homebrew runs these steps again from the old cask when it rolls back a failed upgrade. By then the
-    # source folder is gone, so build and clean up only while it exists.
-    if_path_exists "agent-switch-{{version}}/Cargo.toml", base: :staged_path do
-      # Build the app and the CLI from source.
-      run "/bin/bash",
-          args:           ["scripts/bundle-app.sh"],
-          chdir:          "{{staged_path}}/agent-switch-{{version}}",
-          env:            {
-            "PATH"             => "{{HOMEBREW_PREFIX}}/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-            "CARGO_HOME"       => "{{staged_path}}/cargo-home",
-            "CARGO_TARGET_DIR" => "{{staged_path}}/build",
-          },
-          network_access: true
-
-      # Remove the files of a script install, only after the build worked.
-      remove "Applications/AgentSwitch.app", base: :home, recursive: true
-      remove ".local/bin/agent-switch", base: :home
-    end
-  end
-
-  postflight_steps do
-    remove ["{{staged_path}}/build", "{{staged_path}}/cargo-home", "{{staged_path}}/agent-switch-{{version}}"],
-           recursive: true
+    # Remove the files of a script install.
+    remove "Applications/AgentSwitch.app", base: :home, recursive: true
+    remove ".local/bin/agent-switch", base: :home
   end
 
   uninstall quit: "dev.agent-switch.menubar"
