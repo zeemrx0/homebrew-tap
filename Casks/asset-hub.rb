@@ -1,6 +1,6 @@
 cask "asset-hub" do
-  version "2.1.1"
-  sha256 "8ccf54c3ffa05fe8db3223e5ae0352fc271716a14f25242301fba9e25638cb7a"
+  version "2.2.0"
+  sha256 "40052ff0c3176e767fab32341f51a3b39486f466abfc62ec8397256db5caab9e"
 
   url "https://github.com/SCVN-Zee/asset-hub/releases/download/v#{version}/Asset.Hub.app.tar.gz"
   name "Asset Hub"
