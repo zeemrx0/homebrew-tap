@@ -1,6 +1,6 @@
 cask "agent-switch" do
-  version "0.1.17"
-  sha256 "58538654670eea36eddfd377c97ac5ea268d084d07d8285af391f8edd456a9ad"
+  version "0.1.18"
+  sha256 "674ee1c3c9d974520714130562603f02ffa63e038820d7daabb3fd39e5b66d49"
 
   url "https://github.com/ZeeMRx0/agent-switch/releases/download/v#{version}/Agent-Switch-#{version}-arm64.zip"
   name "Agent Switch"
