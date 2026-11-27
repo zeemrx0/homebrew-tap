@@ -1,6 +1,6 @@
 cask "zak-desktop" do
-  version "0.4.0"
-  sha256 "c7f8efd1e933aaef6be256f49d1bff4f835e3ba9f8216b12d677dba3be98ed97"
+  version "0.5.0"
+  sha256 "f51d19b3a229f5a65424749993d1398a4d8722cdc7bd757743520580ddeb382e"
 
   url "https://github.com/zeemrx0/zak-app/releases/download/v#{version}/zak-desktop-#{version}-arm64.zip"
   name "zAgentKit"
